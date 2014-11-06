@@ -1,15 +1,26 @@
 package com.example.android.markers;
 
-import android.support.v4.app.FragmentActivity;
+import android.content.Context;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity {
 
+    //List for save added markers
+    List<Marker> markers = new ArrayList<Marker>();
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     @Override
@@ -60,6 +71,51 @@ public class MapsActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        // Enable MyLocation Layer of Google Map
+        mMap.setMyLocationEnabled(true);
+
+        // Get LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Create a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+
+        // Get the name of the best provider
+        String provider;
+        provider = locationManager.getBestProvider(criteria, true);
+
+        // Get Current Location
+        Location myLocation;
+        myLocation = locationManager.getLastKnownLocation(provider);
+
+        // set map type
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        // Get coordinates of the current location
+        double mLatitude = myLocation.getLatitude();
+        double mLongitude = myLocation.getLongitude();
+
+        // Create a LatLng object for the current location
+        final LatLng mLatLng = new LatLng(mLatitude, mLongitude);
+
+        // Show the current location in Google Map
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
+        // Zoom in the Google Map
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+
+        // On map long click
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                addMarker(latLng);
+            }
+        });
+    }
+
+    // Adding marker on the GoogleMaps
+    private void addMarker(LatLng latlng) {
+        Marker marker = mMap.addMarker(new MarkerOptions().position(latlng));
+        markers.add(marker);
     }
 }
