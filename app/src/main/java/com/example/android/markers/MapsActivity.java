@@ -80,8 +80,7 @@ public class MapsActivity extends FragmentActivity {
     }
 
     /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
@@ -116,7 +115,7 @@ public class MapsActivity extends FragmentActivity {
         // Show the current location in Google Map
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
         // Zoom in the Google Map
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
 
 
         // On map long click
@@ -154,20 +153,16 @@ public class MapsActivity extends FragmentActivity {
             try {
                 url = new URL(strUrl);
 
-                HttpURLConnection connection = (HttpURLConnection) url
-                        .openConnection();
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
-                        connection.getOutputStream());
-
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
                 outputStreamWriter.write("lat=" + lat + "&lng=" + lng);
                 outputStreamWriter.flush();
                 outputStreamWriter.close();
 
                 InputStream iStream = connection.getInputStream();
-                BufferedReader reader = new BufferedReader(new
-                        InputStreamReader(iStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(iStream));
 
                 StringBuffer sb = new StringBuffer();
 
@@ -244,8 +239,7 @@ public class MapsActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> result) {
-            for (int i = 0; i < result.size(); i++) {
-                HashMap<String, String> marker = result.get(i);
+            for (HashMap<String, String> marker : result) {
                 LatLng latlng = new LatLng(Double.parseDouble(marker.get("lat")), Double.parseDouble(marker.get("lng")));
                 addMarker(latlng);
             }
